@@ -60,6 +60,18 @@ void freeDeposit(deposit_t d){
     d.maxSize = 0;
 }
 
+int timeToInt(char* date){
+    int hh, mm, ss;
+    sscanf(date, "%d:%d:%d", &hh, &mm, &ss);
+    return hh*3600+mm*60+ss;
+}
+
+int dateToInt(char *date){
+    int y, m, d;
+    sscanf(date, "%d/%d/%d", &y, &m, &d);
+    return y*10000+m*100+d;
+}
+
 void printLine(route_t line, FILE *fd){
     if(fd == NULL) return;
     fprintf(fd, "%s %s %s %s %s %s %d\n",
@@ -146,6 +158,10 @@ void addLine(deposit_t *deposit, char *line){
 
 
 void commandHandling(deposit_t deposit, comando_e command){
+    int i = 0;
+    char in1[100];
+    char in2[100];
+    int delayTot = 0;
     switch (command) {
         // r_help
         case r_help:
@@ -154,6 +170,14 @@ void commandHandling(deposit_t deposit, comando_e command){
 
         // r_date: shows all trips that departed between two dates
         case r_date:
+            printf("\tinsert dates <yyyy/mm/dd yyyy/mm/dd>:");
+            fflush(stdout);
+            scanf("%s %s", in1, in2);
+            int start = dateToInt(in1), end = dateToInt(in2);
+            for(i = 0; i < deposit.maxSize; i++)
+                if(dateToInt(deposit.lines[i].date) >= start && dateToInt(deposit.lines[i].date) <= end)
+                    printLine(deposit.lines[i], stdout);
+
             break;
 
         // r_partenza: shows all routes starting from a specified stop
@@ -170,11 +194,16 @@ void commandHandling(deposit_t deposit, comando_e command){
 
         // r_ritardo_tot: displays the total delay accumulated
         case r_ritardo_tot:
+            for(i = 0; i < deposit.maxSize; i++) {
+                delayTot += deposit.lines[i].delay;
+            }
+            printf("Total delay: %d\n", delayTot);
+
             break;
 
         //  r_print: print all existing lines
         case r_print:
-            for (int i = 0; i < deposit.size; ++i) {
+            for (i = 0; i < deposit.size; ++i) {
                 printLine(deposit.lines[i],stdout);
             }
             break;
