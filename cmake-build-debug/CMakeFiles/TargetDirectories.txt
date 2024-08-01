@@ -1,0 +1,3 @@
+C:/Users/edoar/Desktop/Algoritmi e sofferenza/Algorithms-and-Data-Structures-Polito/cmake-build-debug/CMakeFiles/Algorithms_and_Data_Structures_Polito.dir
+C:/Users/edoar/Desktop/Algoritmi e sofferenza/Algorithms-and-Data-Structures-Polito/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/edoar/Desktop/Algoritmi e sofferenza/Algorithms-and-Data-Structures-Polito/cmake-build-debug/CMakeFiles/rebuild_cache.dir
