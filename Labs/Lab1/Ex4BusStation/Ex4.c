@@ -5,8 +5,9 @@
 #include <string.h>
 
 #define LOG "corse.txt"
-#define COMMANDSNUM 8
-#define DBG 1
+#define COMMANDSNUM 9
+# define SORTOPTNUM 4
+#define DBG 0
 
 typedef struct route_s {
     char *id;
@@ -32,12 +33,18 @@ deposit_t newDeposit(){
     return  deposit;
 }
 
-typedef enum {r_help, r_date, r_partenza, r_capolinea, r_ritardo, r_ritardo_tot, r_print, r_fine}comando_e;
+typedef enum {r_help, r_date, r_partenza, r_capolinea, r_ritardo, r_ritardo_tot, r_print, r_sort, r_fine}comando_e;
+typedef enum {id, date, dep, dest} sortingOptions_e;
 
-char *commands[] = {"r_help","r_date", "r_partenza", "r_capolinea", "r_ritardo", "r_ritardo_tot", "r_print", "r_fine"};
+char *commands[] = {"r_help","r_date", "r_partenza", "r_capolinea", "r_ritardo", "r_ritardo_tot", "r_print", "r_sort", "r_fine"};
+char *ord[] = {"id", "date", "dep", "dest"};
+int ordered[] = {0, 0, 0, 0};
 
 // function used to convert an input from string to comando_e
 comando_e commandSearch(char* input);
+
+// function used to convert an input from string to sortingOptions_e
+sortingOptions_e sortingOptionsSearch(char* input);
 
 // add a new line to a specified deposit
 void addLine(deposit_t *deposit, char *line);
@@ -80,8 +87,16 @@ void printLine(route_t line, FILE *fd){
 
 }
 
+void printOrderedLines(route_t **orderTracker, int len){
+    for (int i = 0; i < len; ++i) {
+        printLine(*(orderTracker[i]),stdout);
+    }
+}
+
 // this function handles all implemented commands
 void commandHandling(deposit_t deposit, comando_e command);
+void sort(route_t **tracker, int len, sortingOptions_e opt);
+route_t **ido, **dateo, **depo, **desto;
 
 
 int main(){
@@ -94,14 +109,24 @@ int main(){
     fd = fopen(LOG, "r");
     fscanf(fd, "%d\n", &deposit.maxSize);
     deposit.lines = (route_t *) malloc(deposit.maxSize * sizeof(route_t));
+    ido = (route_t **) malloc(deposit.maxSize * sizeof(route_t *));
+    dateo = (route_t **) malloc(deposit.maxSize * sizeof(route_t *));
+    depo = (route_t **) malloc(deposit.maxSize * sizeof(route_t *));
+    desto = (route_t **) malloc(deposit.maxSize * sizeof(route_t *));
     for (int i = 0; i < deposit.maxSize; i++) {
         fgets(line, 100, fd);
-        #if DBG
-            printf("%s", line);
-        #endif
+
         addLine(&deposit, line);
+        ido[i] = &(deposit.lines[i]);
+        dateo[i] = &(deposit.lines[i]);
+        depo[i] = &(deposit.lines[i]);
+        desto[i] = &(deposit.lines[i]);
     }
     fclose(fd);
+
+    #if DBG
+        printOrderedLines(ido, deposit.size);
+    #endif
 
     // commands handling
     printMenu();
@@ -113,9 +138,13 @@ int main(){
         command = commandSearch(input);
         if(command != r_fine) commandHandling(deposit, command);
     } while(command != r_fine);
+
     printf("goodbye\n");
     freeDeposit(deposit);
-
+    free(ido);
+    free(dateo);
+    free(desto);
+    free(depo);
 
     return 0;
 }
@@ -126,6 +155,16 @@ comando_e commandSearch(char* input){
             return i;
     }
     return -1;
+}
+
+
+sortingOptions_e sortingOptionsSearch(char* input){
+    for (int i = 0; i < SORTOPTNUM; ++i) {
+        if(strcmp(input, ord[i]) == 0)
+            return i;
+    }
+    return -1;
+
 }
 
 void printMenu(){
@@ -231,8 +270,75 @@ void commandHandling(deposit_t deposit, comando_e command){
             }
             break;
 
+        case r_sort:
+            printf("\tinsert sorting option(id, date, dep, dest): ");
+            fflush(stdout);
+            scanf("%s", in1);
+            sortingOptions_e opt = sortingOptionsSearch(in1);
+            route_t **tracker;
+            switch (opt) {
+                case id:
+                    tracker = ido;
+                    break;
+                case date:
+                    tracker = dateo;
+                    break;
+                case dest:
+                    tracker = desto;
+                    break;
+                case dep:
+                    tracker = depo;
+                    break;
+                default:
+                    printf("Error: invalid sorting option\n");
+                    return;
+            }
+            sort(tracker, deposit.size, opt);
+            printOrderedLines(tracker, deposit.size);
+            break;
+
         default:
             printf("the specified command does not exists\n");
 
     }
+}
+
+void sort(route_t **tracker, int len, sortingOptions_e opt){
+    if(ordered[opt]) return; // => already sorted
+
+    ordered[opt] = 1;
+    route_t *tmp;
+    int swap = 0;
+    for(int i = 0; i < len; i++){
+        for(int j = i; j > 0; j--){
+            // if el[j] < el[j+1] => swap
+            switch (opt) {
+                case id:
+                    if( strcmp((*tracker[j]).id, (*tracker[j-1]).id) < 0 )
+                        swap = 1;
+                    break;
+                case date:
+                    if( dateToInt((*tracker[j]).date) - dateToInt((*tracker[j-1]).date) < 0 )
+                        swap = 1;
+                    break;
+                case dest:
+                    if( strcmp((*tracker[j]).destination, (*tracker[j-1]).destination) < 0 )
+                        swap = 1;
+                    break;
+                case dep:
+                    if( strcmp((*tracker[j]).departure, (*tracker[j-1]).departure) < 0 )
+                        swap = 1;
+                    break;
+            }
+
+            if(swap){
+                tmp = tracker[j];
+                tracker[j] = tracker[j-1];
+                tracker[j-1] = tmp;
+                swap = 0;
+            }
+        }
+    }
+
+
 }
