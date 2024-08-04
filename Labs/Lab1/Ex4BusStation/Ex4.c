@@ -182,14 +182,38 @@ void commandHandling(deposit_t deposit, comando_e command){
 
         // r_partenza: shows all routes starting from a specified stop
         case r_partenza:
+            printf("\tinsert the desired starting stop: ");
+            fflush(stdout);
+            scanf("%s", in1);
+
+            for (i = 0; i < deposit.size; i++) {
+                if(strcmp(deposit.lines[i].departure, in1) == 0)
+                    printLine(deposit.lines[i], stdout);
+            }
             break;
 
         // r_capolinea: shows all lines ending at a specified stop
         case r_capolinea:
+            printf("\tinsert the desired destination: ");
+            fflush(stdout);
+            scanf("%s", in1);
+
+            for (i = 0; i < deposit.size; i++) {
+                if(strcmp(deposit.lines[i].destination, in1) == 0)
+                    printLine(deposit.lines[i], stdout);
+            }
             break;
 
         // r_ritardo: displays the delay for a specific route
         case r_ritardo:
+            printf("\tinsert desired id: ");
+            fflush(stdout);
+            scanf("%s", in1);
+            for(i = 0; i < deposit.maxSize; i++) {
+                if(strcmp(deposit.lines[i].id, in1) == 0)
+                    delayTot += deposit.lines[i].delay;
+            }
+            printf("Total delay for the line %s: %d\n", in1,  delayTot);
             break;
 
         // r_ritardo_tot: displays the total delay accumulated
@@ -198,7 +222,6 @@ void commandHandling(deposit_t deposit, comando_e command){
                 delayTot += deposit.lines[i].delay;
             }
             printf("Total delay: %d\n", delayTot);
-
             break;
 
         //  r_print: print all existing lines
