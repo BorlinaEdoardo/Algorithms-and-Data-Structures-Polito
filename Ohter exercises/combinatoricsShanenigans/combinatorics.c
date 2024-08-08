@@ -134,10 +134,31 @@ void complComb(char *v, int n, int k){
     free(s);
 }
 
+void powersetDeiR(char *v, int n, char *s, int pos, int start){
+    if(start >= n){
+        printf("%d\t", ++count);
+        for(int i = 0; i < pos; i++) printf("%c ", s[i]);
+        printf("\n");
+        return;
+    }
+
+    for (int i = start; i < n; ++i) {
+        s[pos] = v[i];
+        powersetDeiR(v, n, s, pos+1, i+1);
+    }
+    powersetDeiR(v, n, s, pos, n);
+}
+
+void powersetDei(char *v, int n){
+    char * s = (char *)malloc(n*sizeof(char));
+    powersetDeiR(v, n, s, 0, 0);
+    free(s);
+}
+
 
 int main(){
     char v[] = {'A', 'A', 'B', 'B', 'B', 'C'};
     char vset[] = {'A', 'B', 'C', 'D', 'E', 'F'};
-    complComb(vset, 6, 3);
+    powersetDei(vset, 6);
     return 0;
 }
