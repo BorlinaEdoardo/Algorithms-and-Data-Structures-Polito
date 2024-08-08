@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "Algorithms_and_Data_Structures_Polito.exe"
+			"path" : "Algorithms_and_Data_Structures_Polito_combinatorics.exe"
 		},
 		{
-			"path" : "Algorithms_and_Data_Structures_Polito.pdb"
+			"path" : "Algorithms_and_Data_Structures_Polito_combinatorics.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -59,7 +59,7 @@
 			]
 		}
 	],
-	"id" : "Algorithms_and_Data_Structures_Polito::@6890427a1f51a3e7e1df",
+	"id" : "Algorithms_and_Data_Structures_Polito_combinatorics::@6890427a1f51a3e7e1df",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -79,8 +79,8 @@
 		],
 		"language" : "C"
 	},
-	"name" : "Algorithms_and_Data_Structures_Polito",
-	"nameOnDisk" : "Algorithms_and_Data_Structures_Polito.exe",
+	"name" : "Algorithms_and_Data_Structures_Polito_combinatorics",
+	"nameOnDisk" : "Algorithms_and_Data_Structures_Polito_combinatorics.exe",
 	"paths" : 
 	{
 		"build" : ".",
@@ -101,7 +101,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "Ex4.c",
+			"path" : "combinatorics.c",
 			"sourceGroupIndex" : 0
 		}
 	],

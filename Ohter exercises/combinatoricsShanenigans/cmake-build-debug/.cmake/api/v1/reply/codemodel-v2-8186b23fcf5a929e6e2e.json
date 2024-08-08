@@ -27,7 +27,7 @@
 					[
 						0
 					],
-					"name" : "Algorithms_and_Data_Structures_Polito",
+					"name" : "Algorithms_and_Data_Structures_Polito_combinatorics",
 					"targetIndexes" : 
 					[
 						0
@@ -38,9 +38,9 @@
 			[
 				{
 					"directoryIndex" : 0,
-					"id" : "Algorithms_and_Data_Structures_Polito::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-Algorithms_and_Data_Structures_Polito-Debug-224704e13696527f7e10.json",
-					"name" : "Algorithms_and_Data_Structures_Polito",
+					"id" : "Algorithms_and_Data_Structures_Polito_combinatorics::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Algorithms_and_Data_Structures_Polito_combinatorics-Debug-d671c762c44d0dc3519e.json",
+					"name" : "Algorithms_and_Data_Structures_Polito_combinatorics",
 					"projectIndex" : 0
 				}
 			]
@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/edoar/Desktop/Algoritmi e sofferenza/Algorithms-and-Data-Structures-Polito/Labs/Lab1/Ex4BusStation/cmake-build-debug",
-		"source" : "C:/Users/edoar/Desktop/Algoritmi e sofferenza/Algorithms-and-Data-Structures-Polito/Labs/Lab1/Ex4BusStation"
+		"build" : "C:/Users/edoar/Desktop/Algoritmi e sofferenza/Algorithms-and-Data-Structures-Polito/Ohter exercises/combinatoricsShanenigans/cmake-build-debug",
+		"source" : "C:/Users/edoar/Desktop/Algoritmi e sofferenza/Algorithms-and-Data-Structures-Polito/Ohter exercises/combinatoricsShanenigans"
 	},
 	"version" : 
 	{

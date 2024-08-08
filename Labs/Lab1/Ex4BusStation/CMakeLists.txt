@@ -3,7 +3,7 @@ project(Algorithms_and_Data_Structures_Polito C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(Algorithms_and_Data_Structures_Polito
+add_executable(Algorithms_and_Data_Structures_Polito_lab1
         Ex4.c)
 
 

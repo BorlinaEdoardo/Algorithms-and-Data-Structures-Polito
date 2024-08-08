@@ -1,0 +1,3 @@
+C:/Users/edoar/Desktop/Algoritmi e sofferenza/Algorithms-and-Data-Structures-Polito/Ohter exercises/combinatoricsShanenigans/cmake-build-debug/CMakeFiles/Algorithms_and_Data_Structures_Polito_combinatorics.dir
+C:/Users/edoar/Desktop/Algoritmi e sofferenza/Algorithms-and-Data-Structures-Polito/Ohter exercises/combinatoricsShanenigans/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/edoar/Desktop/Algoritmi e sofferenza/Algorithms-and-Data-Structures-Polito/Ohter exercises/combinatoricsShanenigans/cmake-build-debug/CMakeFiles/rebuild_cache.dir
