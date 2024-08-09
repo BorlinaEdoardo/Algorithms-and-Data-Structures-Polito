@@ -155,10 +155,76 @@ void powersetDei(char *v, int n){
     free(s);
 }
 
+void powersetComb(char *v, int n){
+    for (int i = 0; i <= n; ++i) {
+        comb(v,n,i);
+    }
+}
+
+void erRec(char *v, int *s, int pos, int n, int m){
+    if(pos>=n){
+        printf("Partizione in %d blocchi:\n\t", m);
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if(s[j] == i){
+                    printf("%c ", v[j]);
+                }
+            }
+            printf("\n\t");
+        }
+        printf("\n");
+        return;
+    }
+
+    for (int i = 0; i < m; ++i) {
+        s[pos] = i;
+        erRec(v, s, pos+1,n,m);
+    }
+    s[pos] = m;
+    erRec(v, s, pos+1, n,m+1);
+}
+
+void erPart(char *v, int n){
+    int *sol = calloc(n, sizeof(int));
+    erRec(v, sol, 0, n, 0);
+    free(sol);
+}
+
+void erRecK(char *v, int *s, int pos, int n, int m, int k){
+    if(pos>=n){
+        if(m==k) {
+            printf("Partizione num %d:\n\t", count++);
+            for (int i = 0; i < m; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    if (s[j] == i) {
+                        printf("%c ", v[j]);
+                    }
+                }
+                printf("\n\t");
+            }
+            printf("\n");
+        }
+        return;
+    }
+
+    for (int i = 0; i < m; ++i) {
+        s[pos] = i;
+        erRecK(v, s, pos+1,n,m,k);
+    }
+    s[pos] = m;
+    erRecK(v, s, pos+1,n,m+1,k);
+}
+
+void erPartK(char *v, int n, int k){
+    int *sol = calloc(n, sizeof(int));
+    erRecK(v, sol, 0, n, 0, k);
+    free(sol);
+}
+
 
 int main(){
     char v[] = {'A', 'A', 'B', 'B', 'B', 'C'};
     char vset[] = {'A', 'B', 'C', 'D', 'E', 'F'};
-    powersetDei(vset, 6);
+    erPartK(vset, 6, 2);
     return 0;
 }
