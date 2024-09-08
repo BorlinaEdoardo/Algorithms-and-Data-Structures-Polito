@@ -225,6 +225,6 @@ void erPartK(char *v, int n, int k){
 int main(){
     char v[] = {'A', 'A', 'B', 'B', 'B', 'C'};
     char vset[] = {'A', 'B', 'C', 'D', 'E', 'F'};
-    erPartK(vset, 6, 2);
+    erPart(vset, 6);
     return 0;
 }
