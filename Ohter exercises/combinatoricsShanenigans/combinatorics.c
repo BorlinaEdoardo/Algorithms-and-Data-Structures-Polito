@@ -156,7 +156,7 @@ void powersetDei(char *v, int n){
 }
 
 void powersetComb(char *v, int n){
-    for (int i = 0; i <= n; ++i) {
+    for (int i = n; i >= 0; --i) {
         comb(v,n,i);
     }
 }
@@ -225,6 +225,7 @@ void erPartK(char *v, int n, int k){
 int main(){
     char v[] = {'A', 'A', 'B', 'B', 'B', 'C'};
     char vset[] = {'A', 'B', 'C', 'D', 'E', 'F'};
-    erPart(vset, 6);
+    //erPart(vset, 6);
+    powersetComb(vset, 6);
     return 0;
 }
