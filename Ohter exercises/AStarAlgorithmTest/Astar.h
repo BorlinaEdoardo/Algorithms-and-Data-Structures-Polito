@@ -8,11 +8,12 @@
 #define COL 10
 #define ROW 20
 
+#define SETSIZE 101
+
 typedef struct coord_s{
     int x;
     int y;
 }coord_t;
-
 
 typedef struct cell_s{
     coord_t parent;
@@ -20,7 +21,30 @@ typedef struct cell_s{
     int f;
     int g;
     int h;
-}cell_t, *CELL;
+}cell_t;
+
+
+// Set implemented with a first class ADT hash table (with linear probing for collision management)
+
+typedef struct setCell_s {
+    coord_t c; // Coordinate stored in the cell
+    int f;     // f = g + h
+    int flag;  // Status flag: 0 = empty, 1 = occupied, -1 = removed
+} setCell_t;
+
+typedef struct set_s *SET;
+
+SET SETinit(int capacity);
+void SETfree(SET set);
+
+int SETisEmpty(SET set);
+int SETcontains(SET set, coord_t c);
+
+int SETgetValue(SET set, coord_t c, int* value);
+int SETinsert(SET set, coord_t c, int f);
+int SETremove(SET set, coord_t c);
+
+setCell_t *SETbegin(SET set);
 
 // STACK implementation (through simple dynamic vector) as I class ADT
 typedef struct stack_s *STACK;

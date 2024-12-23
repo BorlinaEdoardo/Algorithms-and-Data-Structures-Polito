@@ -1,0 +1,60 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.25"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "20230511_EX5",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "20230511_EX5::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-20230511_EX5-Debug-313c46158c03396dcad0.json",
+					"name" : "20230511_EX5",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/edoar/Desktop/Algoritmi e sofferenza/Algorithms-and-Data-Structures-Polito/ExamPrep/20230511-EX5/cmake-build-debug",
+		"source" : "C:/Users/edoar/Desktop/Algoritmi e sofferenza/Algorithms-and-Data-Structures-Polito/ExamPrep/20230511-EX5"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}
