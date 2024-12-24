@@ -70,145 +70,202 @@ void STACKfree(STACK S){
 
 // Set structure
 typedef struct set_s {
-    setCell_t* table; // Dynamic array for the hash table
-    int size;         // Number of elements in the set
-    int capacity;     // Hash table size
+    setNode_t *root; // Root node of the BST
+    int size;        // Number of elements in the set
 } set_t;
 
-// Hash function for a 2D coordinate
-unsigned int hash(coord_t c, int capacity) {
-    return (abs(c.x * 49 + c.y) % capacity);
+// Helper function to create a new tree node
+setNode_t* createNode(coord_t c, int f) {
+    setNode_t* newNode = (setNode_t*)malloc(sizeof(setNode_t));
+    if (!newNode) return NULL;
+    newNode->c = c;
+    newNode->f = f;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
 }
 
-// Initialize the set with a given capacity
-set_t* SETinit(int capacity) {
-    set_t* set = (set_t*)malloc(sizeof(set_t));
-    if (set == NULL) return NULL;
-
-    set->table = (setCell_t*)calloc(capacity, sizeof(setCell_t));
-    if (set->table == NULL) {
-        free(set);
-        return NULL;
+// Comparison function for ordering nodes
+// Returns:
+//   -1 if (f1, c1) < (f2, c2)
+//    0 if (f1, c1) == (f2, c2)
+//    1 if (f1, c1) > (f2, c2)
+int compareNodes(int f1, coord_t c1, int f2, coord_t c2) {
+    if (f1 < f2) {
+        return -1; // Smaller f comes first
+    } else if (f1 > f2) {
+        return 1; // Larger f comes last
+    } else {
+        // f1 == f2, compare coordinates lexicographically
+        if (c1.x < c2.x || (c1.x == c2.x && c1.y < c2.y)) {
+            return -1;
+        } else if (c1.x > c2.x || (c1.x == c2.x && c1.y > c2.y)) {
+            return 1;
+        } else {
+            return 0; // Identical nodes
+        }
     }
+}
 
+// Initialize the set
+set_t* SETinit() {
+    set_t* set = (set_t*)malloc(sizeof(set_t));
+    if (!set) return NULL;
+    set->root = NULL;
     set->size = 0;
-    set->capacity = capacity;
-
     return set;
 }
 
-// Insert a coordinate into the set
-int SETinsert(SET set, coord_t c, int f) {
-    unsigned int index = hash(c, set->capacity);
-    int i;
-    for (i = 0; i < set->capacity; i++) {
-        unsigned int probe = (index + i) % set->capacity;
-
-        if (set->table[probe].flag == 0) { // Empty cell
-            set->table[probe].c = c;
-            set->table[probe].f = f;  // Store the provided value
-            set->table[probe].flag = 1;  // Mark cell as occupied
-            set->size++;
-            return 1; // Successful insertion
-        } else if (set->table[probe].flag == 1 &&
-                   set->table[probe].c.x == c.x &&
-                   set->table[probe].c.y == c.y) {
-            return 0; // Element already exists
-        }
+// Helper function to insert a node into the BST
+setNode_t* insertNode(setNode_t* root, coord_t c, int f, int* inserted) {
+    if (!root) {
+        *inserted = 1;
+        return createNode(c, f); // Create a new node if the root is null
     }
 
-    return -1; // Insertion failed: table is full
+    int comparison = compareNodes(f, c, root->f, root->c);
+    if (comparison < 0) {
+        root->left = insertNode(root->left, c, f, inserted);
+    } else if (comparison > 0) {
+        root->right = insertNode(root->right, c, f, inserted);
+    } else {
+        *inserted = 0; // Node already exists (same f and coordinates)
+    }
+
+    return root;
 }
 
-// Check if the set contains a coordinate
-int SETcontains(SET set, coord_t c) {
-    unsigned int index = hash(c, set->capacity);
-    int i;
-    for (i = 0; i < set->capacity; i++) {
-        unsigned int probe = (index + i) % set->capacity;
+// Insert a coordinate into the set
+int SETinsert(set_t* set, coord_t c, int f) {
+    if (!set) return -1;
 
-        if (set->table[probe].flag == 0) {
-            return 0; // Element not found
-        } else if (set->table[probe].flag == 1 &&
-                   set->table[probe].c.x == c.x &&
-                   set->table[probe].c.y == c.y) {
-            return 1; // Element found
-        }
+    int inserted = 0;
+    set->root = insertNode(set->root, c, f, &inserted);
+    if (inserted) {
+        set->size++;
     }
+    return inserted; // Return 1 if inserted, 0 if duplicate
+}
 
-    return 0; // Element not found
+// Helper function to search for a node in the BST based on coordinates and `f`
+setNode_t* findNode(setNode_t* root, coord_t c, int f) {
+    if (!root) return NULL;
+
+    int comparison = compareNodes(f, c, root->f, root->c);
+    if (comparison < 0) {
+        return findNode(root->left, c, f);
+    } else if (comparison > 0) {
+        return findNode(root->right, c, f);
+    } else {
+        return root; // Node found
+    }
+}
+
+// Check if the set contains a coordinate with a specific `f`
+int SETcontains(set_t* set, coord_t c, int f) {
+    if (!set) return 0;
+
+    setNode_t* node = findNode(set->root, c, f);
+    return (node != NULL) ? 1 : 0;
 }
 
 // Get the value (f) associated with a coordinate
-int SETgetValue(SET set, coord_t c, int* value) {
-    unsigned int index = hash(c, set->capacity);
-    int i;
-    for (i = 0; i < set->capacity; i++) {
-        unsigned int probe = (index + i) % set->capacity;
+int SETgetValue(set_t* set, coord_t c, int* value) {
+    if (!set) return 0;
 
-        if (set->table[probe].flag == 0) {
-            return 0; // Element not found
-        } else if (set->table[probe].flag == 1 &&
-                   set->table[probe].c.x == c.x &&
-                   set->table[probe].c.y == c.y) {
-            *value = set->table[probe].f; // Retrieve the value
-            return 1; // Value found
-        }
+    setNode_t* node = findNode(set->root, c, *value);
+    if (node) {
+        *value = node->f;
+        return 1; // Value found
     }
 
-    return 0; // Element not found
+    return 0; // Value not found
+}
+
+// Helper function to find the node with the smallest `f` in a subtree
+setNode_t* findMinF(setNode_t* root) {
+    if (!root) return NULL;
+
+    setNode_t* current = root;
+    while (current->left) {
+        current = current->left; // Keep going left to find the smallest `f`
+    }
+    return current;
+}
+
+// Helper function to remove a node from the BST
+setNode_t* removeNode(setNode_t* root, coord_t c, int f, int* removed) {
+    if (!root) return NULL;
+
+    int comparison = compareNodes(f, c, root->f, root->c);
+    if (comparison < 0) {
+        root->left = removeNode(root->left, c, f, removed);
+    } else if (comparison > 0) {
+        root->right = removeNode(root->right, c, f, removed);
+    } else {
+        *removed = 1;
+
+        // Node with only one child or no child
+        if (!root->left) {
+            setNode_t* temp = root->right;
+            free(root);
+            return temp;
+        } else if (!root->right) {
+            setNode_t* temp = root->left;
+            free(root);
+            return temp;
+        }
+
+        // Node with two children: Get the inorder successor
+        setNode_t* temp = findMinF(root->right);
+        root->c = temp->c;
+        root->f = temp->f;
+        root->right = removeNode(root->right, temp->c, temp->f, removed);
+    }
+
+    return root;
 }
 
 // Remove a coordinate from the set
-int SETremove(set_t* set, coord_t c) {
-    unsigned int index = hash(c, set->capacity);
-    int i;
-    for (i = 0; i < set->capacity; i++) {
-        unsigned int probe = (index + i) % set->capacity;
+int SETremove(set_t* set, coord_t c, int f) {
+    if (!set) return 0;
 
-        if (set->table[probe].flag == 0) {
-            return 0; // Element not found
-        } else if (set->table[probe].flag == 1 &&
-                   set->table[probe].c.x == c.x &&
-                   set->table[probe].c.y == c.y) {
-            set->table[probe].flag = -1; // Mark as "removed"
-            set->size--;
-            return 1; // Element removed
-        }
+    int removed = 0;
+    set->root = removeNode(set->root, c, f, &removed);
+    if (removed) {
+        set->size--;
     }
-
-    return 0; // Element not found
+    return removed; // Return 1 if removed, 0 if not found
 }
 
 // Check if the set is empty
-int SETisEmpty(SET set) {
-    if (set == NULL) {
-        return 1; // A non-initialized set is considered empty
-    }
-    return (set->size == 0) ? 1 : 0;
+int SETisEmpty(set_t* set) {
+    return (set && set->size == 0) ? 1 : 0;
 }
 
-// Destroy the set and free memory
-void SETfree(SET set) {
+// Free the memory used by the BST
+void freeTree(setNode_t* root) {
+    if (!root) return;
+
+    freeTree(root->left);
+    freeTree(root->right);
+    free(root);
+}
+
+// Free the set
+void SETfree(set_t* set) {
     if (set) {
-        free(set->table);
+        freeTree(set->root);
         free(set);
     }
 }
 
-// Return a pointer to the first valid (occupied) element in the set
-setCell_t* SETbegin(set_t* set) {
-    if (set == NULL || set->size == 0) return NULL; // Return NULL if the set is empty
-    int i;
-    for (i = 0; i < set->capacity; i++) {
-        if (set->table[i].flag == 1) { // Check if the cell is occupied
-            return &(set->table[i]);  // Return a pointer to the first valid element
-        }
-    }
+// Return a pointer to the node with the smallest `f` value
+setNode_t* SETbegin(set_t* set) {
+    if (!set || !set->root) return NULL;
 
-    return NULL; // No valid elements found
+    return findMinF(set->root); // Find the node with the smallest `f`
 }
-
 
 ///////////////////////////////////////////////////////////
 
@@ -222,16 +279,16 @@ coord_t toCoord(int x, int y){
 
 void tracePath(cell_t cellDetails[][COL], coord_t dest)
 {
-    int row = dest.x;
-    int col = dest.y;
+    int row = dest.y;
+    int col = dest.x;
 
     STACK Path = STACKinit(10);
 
-    while (!(cellDetails[row][col].parent.x == row
-             && cellDetails[row][col].parent.y == col)) {
+    while (!(cellDetails[row][col].parent.x == col
+             && cellDetails[row][col].parent.y == row)) {
         STACKpush(Path, toCoord(row, col));
-        int temp_row = cellDetails[row][col].parent.x;
-        int temp_col = cellDetails[row][col].parent.y;
+        int temp_col = cellDetails[row][col].parent.x;
+        int temp_row = cellDetails[row][col].parent.y;
         row = temp_row;
         col = temp_col;
     }
@@ -247,27 +304,27 @@ void tracePath(cell_t cellDetails[][COL], coord_t dest)
 void aStarSearch(int grid[][COL], coord_t src, coord_t dest)
 {
     // If the source is out of range
-    if (isValid(src.x, src.y) == 0) {
+    if (isValid(src.y, src.x) == 0) {
         printf("Source is invalid\n");
         return;
     }
 
     // If the destination is out of range
-    if (isValid(dest.x, dest.y) == 0) {
+    if (isValid(dest.y, dest.x) == 0) {
         printf("Destination is invalid\n");
         return;
     }
 
     // Either the source or the destination is blocked
-    if (isUnBlocked(grid, src.x, src.y) == 0
-        || isUnBlocked(grid, dest.x, dest.y)
+    if (isUnBlocked(grid, src.y, src.x) == 0
+        || isUnBlocked(grid, dest.y, dest.x)
            == 0) {
         printf("Source or the destination is blocked\n");
         return;
     }
 
     // If the destination cell is the same as source cell
-    if (isDestination(src.x, src.y, dest)
+    if (isDestination(src.y, src.x, dest)
         == 1) {
         printf("We are already at the destination\n");
         return;
@@ -283,8 +340,14 @@ void aStarSearch(int grid[][COL], coord_t src, coord_t dest)
     // of that cell
     cell_t cellDetails[ROW][COL];
 
-    int i, j;
+    int i, j, k;
     int fNew, gNew, hNew;
+    int neighborMat[4][2] = {
+            {-1, 0},
+            {+1, 0},
+            {0, +1},
+            {0, -1}
+    };
 
     for (i = 0; i < ROW; i++) {
         for (j = 0; j < COL; j++) {
@@ -301,8 +364,8 @@ void aStarSearch(int grid[][COL], coord_t src, coord_t dest)
     cellDetails[i][j].f = 0;
     cellDetails[i][j].g = 0;
     cellDetails[i][j].h = 0;
-    cellDetails[i][j].parent.x = i;
-    cellDetails[i][j].parent.y = j;
+    cellDetails[i][j].parent.x = j;
+    cellDetails[i][j].parent.y = i;
 
     /*
      Create an open list having information as-
@@ -311,7 +374,7 @@ void aStarSearch(int grid[][COL], coord_t src, coord_t dest)
      and i, j are the row and column index of that cell
      Note that 0 <= i <= ROW-1 & 0 <= j <= COL-1
      This open list is implemented as a set of pair.*/
-    SET openList = SETinit(SETSIZE);
+    SET openList = SETinit();
 
     // Put the starting cell on the open list and set its
     // 'f' as 0
@@ -320,12 +383,12 @@ void aStarSearch(int grid[][COL], coord_t src, coord_t dest)
     // We set this boolean value as false as initially
     // the destination is not reached.
     int foundDest = 0;
-
-    while (!SETisEmpty(openList)) {
-        setCell_t p = *SETbegin(openList);
+    setNode_t p;
+    while (!SETisEmpty(openList) && !foundDest) {
+        p = *SETbegin(openList);
 
         // Remove this vertex from the open list
-        SETremove(openList, p.c);
+        SETremove(openList, p.c, p.f);
 
         // Add this vertex to the closed list
         i = p.c.y;
@@ -339,27 +402,22 @@ void aStarSearch(int grid[][COL], coord_t src, coord_t dest)
          N -->  North       (i-1, j)
          S -->  South       (i+1, j)
          E -->  East        (i, j+1)
-         W -->  West           (i, j-1) */
+         W -->  West        (i, j-1) */
 
-        int neighborMat[4][2] = {
-                {-1, 0},
-                {+1, 0},
-                {0, +1},
-                {0, -1}
-        };
-        int k;
+
         for (k = 0; k < 4; k++) {
-            if (isValid(i - 1, j) == 1){
+            if (isValid(i + neighborMat[k][0], j + neighborMat[k][1]) == 1){
                 // If the destination cell is the same as the
                 // current successor
-                if (isDestination(i - 1, j, dest) == 1) {
+                if (isDestination(i + neighborMat[k][0], j + neighborMat[k][1], dest) == 1) {
                     // Set the Parent of the destination cell
                     cellDetails[i + neighborMat[k][0]][j + neighborMat[k][1]].parent.y = i;
                     cellDetails[i + neighborMat[k][0]][j + neighborMat[k][1]].parent.x = j;
                     printf("The destination cell is found\n");
                     tracePath(cellDetails, dest);
                     foundDest = 1;
-                    return;
+
+                    break;
                 }
                     // If the successor is already on the closed
                     // list or if it is blocked, then ignore it.
@@ -404,7 +462,37 @@ void aStarSearch(int grid[][COL], coord_t src, coord_t dest)
     // blockages)
     if (foundDest == 0)
         printf("Failed to find the Destination Cell\n");
+    SETfree(openList);
+}
 
+
+int isValid(int row, int col)
+{
+    // Returns true if row number and column number
+    // is in range
+    return (row >= 0) && (row < ROW) && (col >= 0)
+           && (col < COL);
+}
+
+int isUnBlocked(int grid[][COL], int row, int col)
+{
+    int i, j;
+    // Returns true if the 3x3 square is not blocked else false
+    for (i = -1; i <= 1; i++) {
+        for (j = -1; j <= 1; j++) {
+            if (grid[row+i][col+j] == 1)
+                return 0;
+        }
+    }
+    return 1;
+}
+
+int isDestination(int row, int col, coord_t dest)
+{
+    if (row == dest.y && col == dest.x)
+        return (1);
+    else
+        return (0);
 }
 
 

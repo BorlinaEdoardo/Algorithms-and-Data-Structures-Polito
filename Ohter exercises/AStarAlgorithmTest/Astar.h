@@ -5,8 +5,11 @@
 #ifndef ASTARALGORITHM_ASTAR_H
 #define ASTARALGORITHM_ASTAR_H
 
-#define COL 10
-#define ROW 20
+#define COL 48
+#define ROW 56
+
+#define MR 56		// map number of rows
+#define MC 48		// map number of columns
 
 #define SETSIZE 101
 
@@ -26,25 +29,29 @@ typedef struct cell_s{
 
 // Set implemented with a first class ADT hash table (with linear probing for collision management)
 
-typedef struct setCell_s {
+typedef struct setNode_s setNode_t;
+
+
+struct setNode_s {
     coord_t c; // Coordinate stored in the cell
     int f;     // f = g + h
-    int flag;  // Status flag: 0 = empty, 1 = occupied, -1 = removed
-} setCell_t;
+    setNode_t *left;   // Left child
+    setNode_t *right;  // Right child
+};
 
 typedef struct set_s *SET;
 
-SET SETinit(int capacity);
+SET SETinit();
 void SETfree(SET set);
 
 int SETisEmpty(SET set);
-int SETcontains(SET set, coord_t c);
+int SETcontains(SET set, coord_t c, int f);
 
 int SETgetValue(SET set, coord_t c, int* value);
 int SETinsert(SET set, coord_t c, int f);
-int SETremove(SET set, coord_t c);
+int SETremove(SET set, coord_t c, int f);
 
-setCell_t *SETbegin(SET set);
+setNode_t *SETbegin(SET set);
 
 // STACK implementation (through simple dynamic vector) as I class ADT
 typedef struct stack_s *STACK;
@@ -61,38 +68,21 @@ static int heuristic(coord_t current, coord_t goal);
 
 // A Utility Function to check whether given cell (row, col)
 // is a valid cell or not.
-int isValid(int row, int col)
-{
-    // Returns true if row number and column number
-    // is in range
-    return (row >= 0) && (row < ROW) && (col >= 0)
-           && (col < COL);
-}
+int isValid(int row, int col);
 
 // A Utility Function to check whether the given cell is
 // blocked or not
-int isUnBlocked(int grid[][COL], int row, int col)
-{
-    // Returns true if the cell is not blocked else false
-    if (grid[row][col] != 1)
-        return 1;
-    else
-        return 0;
-}
+int isUnBlocked(int grid[][COL], int row, int col);
 
 // A Utility Function to check whether destination cell has
 // been reached or not
-int isDestination(int row, int col, coord_t dest)
-{
-    if (row == dest.x && col == dest.y)
-        return (1);
-    else
-        return (0);
-}
+int isDestination(int row, int col, coord_t dest);
 
 // A Utility Function to trace the path from the source
 // to destination
 void tracePath(cell_t cellDetails[][COL], coord_t dest);
 coord_t toCoord(int x, int y);
+
+void aStarSearch(int grid[][COL], coord_t src, coord_t dest);
 
 #endif //ASTARALGORITHM_ASTAR_H
