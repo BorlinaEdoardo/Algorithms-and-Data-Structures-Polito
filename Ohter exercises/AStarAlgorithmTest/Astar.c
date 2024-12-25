@@ -343,10 +343,10 @@ void aStarSearch(int grid[][COL], coord_t src, coord_t dest)
     int i, j, k;
     int fNew, gNew, hNew;
     int neighborMat[4][2] = {
-            {-1, 0},
-            {+1, 0},
-            {0, +1},
-            {0, -1}
+            {-1, 0}, // up
+            {+1, 0}, // down
+            {0, +1}, // right
+            {0, -1}  // left
     };
 
     for (i = 0; i < ROW; i++) {
@@ -494,10 +494,3 @@ int isDestination(int row, int col, coord_t dest)
     else
         return (0);
 }
-
-
-
-
-
-
-

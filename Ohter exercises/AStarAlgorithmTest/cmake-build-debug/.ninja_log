@@ -88,3 +88,6 @@
 87	163	7567440399155305	AStarAlgorithmTest.exe	a2cd3db8e0dc7dc5
 2	71	7567442795668826	CMakeFiles/AStarAlgorithmTest.dir/main.c.obj	ed29df8c67fa636c
 71	161	7567442796519535	AStarAlgorithmTest.exe	a2cd3db8e0dc7dc5
+13	285	7568264120492628	CMakeFiles/AStarAlgorithmTest.dir/main.c.obj	ed29df8c67fa636c
+4	536	7568264123041919	CMakeFiles/AStarAlgorithmTest.dir/Astar.c.obj	5ab2c94f7ca2f0e6
+537	981	7568264127434213	AStarAlgorithmTest.exe	a2cd3db8e0dc7dc5
